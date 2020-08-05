@@ -2,8 +2,9 @@
 // where your node app starts
 
 // init project
-var express = require('express');
-var app = express();
+var express = require('express'),
+  app = express(),
+  port = process.env.PORT || 3000;
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
@@ -24,9 +25,31 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+// Endpoint returning ip address, preferred languages and system info 
+app.get("/api/whoiam", (req, res) => {
+  var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  var language = req.headers["accept-language"];
+  var userAgent = req.headers['user-agent'];
+  // check if ip is in ipv6 format, transform it in ipv4format
+  if (ip.length < 15) 
+  {   
+    ip = ip;
+  }
+  else
+  {
+    var ipv4 = ip.slice(7);
+    ip = ipv4;
+  }
+
+  res.json({
+    "ipaddress": ip,
+    "language": language,
+    "software": userAgent
+  });
+})
 
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen(port, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
